@@ -22,7 +22,7 @@
    const shadowRoot = container.attachShadow({ mode: "open" });
    document.documentElement.appendChild(container);
 
-   // 3) Create a full-page overlay in the shadow root
+   // 3) Full-page overlay
    const overlay = document.createElement("div");
    Object.assign(overlay.style, {
      position: "fixed",
@@ -30,8 +30,8 @@
      left: "0",
      width: "100%",
      height: "100%",
-     backgroundColor: "#222",
-     color: "#fff",
+     backgroundColor: "#222",    // Dark background
+     color: "#f5f0e6",           // Beige text
      zIndex: "999999",
      display: "flex",
      flexDirection: "column",
@@ -39,28 +39,41 @@
      justifyContent: "flex-start",
      textAlign: "center",
      padding: "40px 20px",
-     fontFamily: "'Inter', sans-serif",
+     fontFamily: "'Ubuntu', sans-serif",
      fontSize: "1.2rem",
      lineHeight: "1.6"
    });
    shadowRoot.appendChild(overlay);
 
-   // Motivational heading
-   const heading = document.createElement("h2");
-   heading.textContent = "Pause. Breathe. Recenter.";
-   heading.style.fontSize = "2rem";
-   heading.style.marginBottom = "1rem";
-   overlay.appendChild(heading);
+   // Import the Ubuntu font
+   const linkEl = document.createElement("link");
+   linkEl.rel = "stylesheet";
+   linkEl.href = "https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap";
+   shadowRoot.appendChild(linkEl);
 
-   // Supportive message
-   const subHeading = document.createElement("p");
-   subHeading.textContent = "We know the urge is strong. Let's take a mindful moment before diving into social media.";
-   subHeading.style.fontSize = "1.1rem";
-   subHeading.style.marginBottom = "2rem";
-   subHeading.style.maxWidth = "700px";
-   overlay.appendChild(subHeading);
+   // 4) "Ph.D." style block, left-aligned
+   const phdBlock = document.createElement("div");
+   phdBlock.className = "phd-block"; // We'll style this to be left-aligned
+   phdBlock.innerHTML = `
+     <h1 class="phd-title">Ph.D.</h1>
+     <div class="phd-pronounce">[ˌpiː.eɪtʃˈdiː] <strong>noun</strong></div>
+     <hr class="phd-line" />
+     <p class="phd-definition">
+       someone who does precision guesswork based on <em>unreliable data</em> provided by those of questionable knowledge.
+     </p>
+     <p class="phd-seealso"><em>See also: wizard, magician</em></p>
+   `;
+   overlay.appendChild(phdBlock);
 
-   // Loading text
+   // 5) Motivational message
+   const motivational = document.createElement("p");
+   motivational.textContent = "Remember: A brief pause can refocus your mind and spark new insights. Let’s keep going!";
+   motivational.style.fontSize = "1rem";
+   motivational.style.maxWidth = "700px";
+   motivational.style.marginBottom = "2rem";
+   overlay.appendChild(motivational);
+
+   // 6) Loading text for xkcd
    const loadingText = document.createElement("p");
    loadingText.id = "loadingText";
    loadingText.textContent = "Loading xkcd...";
@@ -68,7 +81,7 @@
    loadingText.style.marginBottom = "2rem";
    overlay.appendChild(loadingText);
 
-   // 4) Request the random xkcd from background.js
+   // 7) Request xkcd comic from background.js
    let xkcdImg;
    try {
      const response = await browser.runtime.sendMessage({ action: "fetchXkcd" });
@@ -76,18 +89,18 @@
        loadingText.textContent = "Here’s a quick mental break from xkcd:";
 
        const { comic } = response;
-       // comic.base64img is the data URI
+       // comic.base64img is a data URI
 
-       // Display the comic as a base64 data URI
        xkcdImg = document.createElement("img");
        xkcdImg.src = comic.base64img;
-       xkcdImg.style.maxWidth = "90%";
-       xkcdImg.style.maxHeight = "500px";
+       // *** Change #2: Fit 350 px height, keep aspect ratio
+       xkcdImg.style.height = "350px";
+       xkcdImg.style.width = "auto";
        xkcdImg.style.objectFit = "contain";
        xkcdImg.style.margin = "1rem 0";
        overlay.appendChild(xkcdImg);
 
-       // Alt text container
+       // Alt text
        const altText = document.createElement("p");
        altText.textContent = comic.alt;
        altText.style.maxWidth = "600px";
@@ -107,12 +120,12 @@
      loadingText.textContent = "Failed to load comic.";
    }
 
-   // 5) Container for the flip clock
+   // 8) Flip clock container
    const clockContainer = document.createElement("div");
    clockContainer.style.marginTop = "2rem";
    overlay.appendChild(clockContainer);
 
-   // A) "CountdownTracker" for each tile (Minutes/Seconds)
+   // A) "CountdownTracker"
    function CountdownTracker(label, initialValue) {
      const el = document.createElement("span");
      el.className = "flip-clock__piece";
@@ -136,31 +149,27 @@
      this.currentValue = null;
 
      this.update = (val) => {
-       // always 2 digits
        const valueStr = ("0" + val).slice(-2);
        if (valueStr === this.currentValue) return;
 
-       // old value
        if (this.currentValue !== null) {
          back.setAttribute("data-value", this.currentValue);
          backBottom.setAttribute("data-value", this.currentValue);
          bottom.setAttribute("data-value", this.currentValue);
        }
-
        this.currentValue = valueStr;
        top.setAttribute("data-value", valueStr);
        bottom.setAttribute("data-value", valueStr);
 
-       // Trigger flip
        el.classList.remove("flip");
-       void el.offsetWidth; // force reflow
+       void el.offsetWidth;
        el.classList.add("flip");
      };
 
      this.update(initialValue);
    }
 
-   // B) Flip clock function
+   // B) Flip clock
    function FlipClock(totalSeconds, onComplete) {
      onComplete = onComplete || function(){};
 
@@ -208,66 +217,72 @@
    });
    clockContainer.appendChild(flipClockEl);
 
-   // "Proceed" button to bypass the timer
+   // "Proceed" button
    const proceedBtn = document.createElement("button");
    proceedBtn.textContent = "Proceed";
    Object.assign(proceedBtn.style, {
      marginTop: "20px",
      padding: "10px 20px",
      fontSize: "1rem",
-     cursor: "pointer"
+     cursor: "pointer",
+     backgroundColor: "#444",
+     color: "#f5f0e6",
+     border: "none",
+     borderRadius: "4px"
    });
    proceedBtn.addEventListener("click", () => {
      container.remove();
    });
    overlay.appendChild(proceedBtn);
 
-   // E) Magnifier with zoom = 2
+   // Magnifier
    function magnify(img, zoom) {
      if (!img) return;
-
      if (!img.complete) {
        img.addEventListener("load", () => magnify(img, zoom), { once: true });
        return;
      }
 
      const glass = document.createElement("div");
-     glass.setAttribute("class", "img-magnifier-glass");
+     glass.className = "img-magnifier-glass";
      overlay.appendChild(glass);
 
      glass.style.backgroundImage = `url('${img.src}')`;
      glass.style.backgroundRepeat = "no-repeat";
 
-     const fullWidth = img.naturalWidth;
-     const fullHeight = img.naturalHeight;
-     glass.style.backgroundSize = (fullWidth * zoom) + "px " + (fullHeight * zoom) + "px";
+     const fw = img.naturalWidth;
+     const fh = img.naturalHeight;
+     glass.style.backgroundSize = (fw * zoom) + "px " + (fh * zoom) + "px";
 
-     let bw = 3;
-     let w = 0, h = 0;
-
+     let bw = 3, w = 0, h = 0;
      requestAnimationFrame(() => {
        w = glass.offsetWidth / 2;
        h = glass.offsetHeight / 2;
      });
 
-     glass.addEventListener("mousemove", moveMagnifier);
+     glass.style.display = "none";
+     img.addEventListener("mouseenter", () => {
+       glass.style.display = "block";
+     });
+     img.addEventListener("mouseleave", () => {
+       glass.style.display = "none";
+     });
+
      img.addEventListener("mousemove", moveMagnifier);
-     glass.addEventListener("touchmove", moveMagnifier);
      img.addEventListener("touchmove", moveMagnifier);
 
      function moveMagnifier(e) {
        e.preventDefault();
        const pos = getCursorPos(e);
-       let x = pos.x;
-       let y = pos.y;
+       let x = pos.x, y = pos.y;
 
-       const fw = fullWidth / (img.width || 1);
-       const fh = fullHeight / (img.height || 1);
+       const scaleX = fw / img.width;
+       const scaleY = fh / img.height;
 
-       if (x > img.width - (w / zoom)) { x = img.width - (w / zoom); }
-       if (x < w / zoom) { x = w / zoom; }
-       if (y > img.height - (h / zoom)) { y = img.height - (h / zoom); }
-       if (y < h / zoom) { y = h / zoom; }
+       if (x > img.width - (w / zoom)) x = img.width - (w / zoom);
+       if (x < w / zoom) x = w / zoom;
+       if (y > img.height - (h / zoom)) y = img.height - (h / zoom);
+       if (y < h / zoom) y = h / zoom;
 
        const rect = img.getBoundingClientRect();
        const offsetLeft = rect.left + window.scrollX;
@@ -277,26 +292,58 @@
        glass.style.left = (offsetLeft + x - w) + "px";
        glass.style.top = (offsetTop + y - h) + "px";
 
-       const bgX = (x * fw * zoom) - w + bw;
-       const bgY = (y * fh * zoom) - h + bw;
+       const bgX = (x * scaleX * zoom) - w + bw;
+       const bgY = (y * scaleY * zoom) - h + bw;
        glass.style.backgroundPosition = `-${bgX}px -${bgY}px`;
      }
 
      function getCursorPos(e) {
        e = e || window.event;
        const rect = img.getBoundingClientRect();
-       let x = e.pageX - rect.left - window.scrollX;
-       let y = e.pageY - rect.top - window.scrollY;
+       const x = e.pageX - rect.left - window.scrollX;
+       const y = e.pageY - rect.top - window.scrollY;
        return { x, y };
      }
    }
 
-   // Magnify with factor = 2
    magnify(xkcdImg, 2);
 
-   // F) Shadow root CSS
+   // 9) Additional CSS
    const styleEl = document.createElement("style");
    styleEl.textContent = `
+     /* Left-align the Ph.D. block */
+     .phd-block {
+       text-align: left;
+       max-width: 600px;
+       margin: 0 auto 2rem auto; /* center horizontally with left-aligned text */
+     }
+
+     .phd-title {
+       margin: 0;
+       font-size: 2.5rem;
+       font-weight: 700;
+       line-height: 1.2;
+     }
+     .phd-pronounce {
+       font-size: 1.2rem;
+       margin: 0.2rem 0 0.5rem;
+     }
+     .phd-line {
+       width: 80px;
+       margin: 0 auto 1rem auto;
+       border: none;
+       border-top: 1px solid #f5f0e6;
+     }
+     .phd-definition {
+       font-size: 1rem;
+       margin: 0.5rem 0;
+     }
+     .phd-seealso {
+       font-size: 0.9rem;
+       margin-top: 0.5rem;
+       font-style: italic;
+     }
+
      .flip-clock {
        text-align: center;
        perspective: 600px;
@@ -324,7 +371,7 @@
      .card__top,
      .card__bottom,
      .card__back::before,
-     .card__back .card__bottom {
+     .card__back .card__bottom::after {
        display: block;
        height: 1.2em;
        overflow: hidden;
@@ -347,7 +394,6 @@
      .card__back::before,
      .card__back .card__bottom::after {
        content: attr(data-value);
-       display: block;
        position: absolute;
        top: 0; left: 0;
        width: 100%; height: 100%;
@@ -355,11 +401,9 @@
      }
      .card__back {
        position: absolute;
-       top: 0;
-       left: 0;
+       top: 0; left: 0;
        transform-origin: center bottom;
-       width: 100%;
-       height: 100%;
+       width: 100%; height: 100%;
        pointer-events: none;
      }
      .card__back .card__bottom {
@@ -371,6 +415,7 @@
      .flip .card__back .card__bottom {
        animation: flipBottom 0.3s forwards ease-in;
      }
+
      @keyframes flipTop {
        0% { transform: rotateX(0deg); }
        100% { transform: rotateX(-90deg); }
@@ -380,7 +425,6 @@
        100% { transform: rotateX(0deg); }
      }
 
-     /* Magnifier glass styling */
      .img-magnifier-glass {
        border: 3px solid #000;
        border-radius: 50%;
@@ -390,6 +434,7 @@
        pointer-events: none;
        z-index: 10000;
        background-repeat: no-repeat;
+       display: none;
      }
    `;
    shadowRoot.appendChild(styleEl);
