@@ -1,15 +1,74 @@
-:root {
-    color-scheme: light dark;
-}
-
+/* Ensure popup is comfortably wide */
 body {
-    width: 100px;
-    padding: 10px;
-
-    font-family: system-ui;
-    text-align: center;
+  min-width: 360px;
+  margin: 0;
+  padding: 1rem;
+  font-family: "Georgia", serif; /* Classic academic serif */
+  background: #fdfdf8;          /* Soft cream background */
+  color: #444;                  /* Neutral text color */
 }
 
-@media (prefers-color-scheme: dark) {
-    /* Dark Mode styles go here. */
+/* Title */
+.title {
+  margin-top: 0;
+  text-align: center;
+  color: #800000; /* Academic maroon accent */
+}
+
+/* Rows for toggles and inputs */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Label styling */
+.label-check {
+  margin-right: 0.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Domain text next to checkbox */
+.domain-text {
+  margin-left: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: normal;
+}
+
+/* Divider line */
+.section-divider {
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+/* List of delayed websites */
+.domain-list {
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: #fff;
+}
+
+/* Each delayed website row */
+.domain-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+/* "Remove" button for each domain */
+.domain-row button {
+  background: transparent;
+  border: none;
+  color: #800000;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.domain-row button:hover {
+  color: #b30000;
 }

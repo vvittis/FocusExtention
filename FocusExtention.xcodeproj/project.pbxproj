@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		D61318922D92309B0087048A /* FocusExtention Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D61318912D92309B0087048A /* FocusExtention Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D61318D52D92636D0087048A /* Screenshot 2025-03-25 at 12.06.15 AM.png in Resources */ = {isa = PBXBuildFile; fileRef = D61318D42D92636D0087048A /* Screenshot 2025-03-25 at 12.06.15 AM.png */; };
+		D61318D72D92638F0087048A /* Screenshot 2025-03-25 at 12.07.32 AM.png in Resources */ = {isa = PBXBuildFile; fileRef = D61318D62D92638F0087048A /* Screenshot 2025-03-25 at 12.07.32 AM.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,8 @@
 		D613187B2D92309B0087048A /* FocusExtentionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FocusExtentionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D61318852D92309B0087048A /* FocusExtentionUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FocusExtentionUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D61318912D92309B0087048A /* FocusExtention Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "FocusExtention Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D61318D42D92636D0087048A /* Screenshot 2025-03-25 at 12.06.15 AM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Screenshot 2025-03-25 at 12.06.15 AM.png"; sourceTree = "<group>"; };
+		D61318D62D92638F0087048A /* Screenshot 2025-03-25 at 12.07.32 AM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Screenshot 2025-03-25 at 12.07.32 AM.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -62,6 +66,27 @@
 				Info.plist,
 			);
 			target = D61318902D92309B0087048A /* FocusExtention Extension */;
+		};
+		D61318C42D9249320087048A /* Exceptions for "FocusExtention Extension" folder in "FocusExtention" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/background.png,
+			);
+			target = D613185E2D9230980087048A /* FocusExtention */;
+		};
+		D61318C52D9249320087048A /* Exceptions for "FocusExtention Extension" folder in "FocusExtentionTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/background.png,
+			);
+			target = D613187A2D92309B0087048A /* FocusExtentionTests */;
+		};
+		D61318C62D9249320087048A /* Exceptions for "FocusExtention Extension" folder in "FocusExtentionUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/background.png,
+			);
+			target = D61318842D92309B0087048A /* FocusExtentionUITests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -84,6 +109,9 @@
 		D61318952D92309B0087048A /* FocusExtention Extension */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				D61318C42D9249320087048A /* Exceptions for "FocusExtention Extension" folder in "FocusExtention" target */,
+				D61318C52D9249320087048A /* Exceptions for "FocusExtention Extension" folder in "FocusExtentionTests" target */,
+				D61318C62D9249320087048A /* Exceptions for "FocusExtention Extension" folder in "FocusExtentionUITests" target */,
 				D61318AB2D92309B0087048A /* Exceptions for "FocusExtention Extension" folder in "FocusExtention Extension" target */,
 			);
 			explicitFolders = (
@@ -135,6 +163,8 @@
 				D61318882D92309B0087048A /* FocusExtentionUITests */,
 				D61318952D92309B0087048A /* FocusExtention Extension */,
 				D61318602D9230980087048A /* Products */,
+				D61318D42D92636D0087048A /* Screenshot 2025-03-25 at 12.06.15 AM.png */,
+				D61318D62D92638F0087048A /* Screenshot 2025-03-25 at 12.07.32 AM.png */,
 			);
 			sourceTree = "<group>";
 		};
@@ -297,6 +327,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D61318D52D92636D0087048A /* Screenshot 2025-03-25 at 12.06.15 AM.png in Resources */,
+				D61318D72D92638F0087048A /* Screenshot 2025-03-25 at 12.07.32 AM.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
