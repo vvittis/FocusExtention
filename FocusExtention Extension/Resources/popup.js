@@ -1,5 +1,14 @@
 // popup.js
 document.addEventListener("DOMContentLoaded", async () => {
+  // References to the two screens
+  const mainScreen = document.getElementById("mainScreen");
+  const websitesScreen = document.getElementById("websitesScreen");
+
+  // References to the buttons
+  const manageWebsitesBtn = document.getElementById("manageWebsitesBtn");
+  const backBtn = document.getElementById("backBtn");
+
+  // Elements from your original code
   const extensionToggle = document.getElementById("extensionToggle");
   const currentDomainCheckbox = document.getElementById("currentDomainCheckbox");
   const currentDomainLabel = document.getElementById("currentDomainLabel");
@@ -17,8 +26,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 2) Set up the "Enable Extension" checkbox
   extensionToggle.checked = !!extensionEnabled;
-
-  // FIXED: addEventListener
   extensionToggle.addEventListener("change", async () => {
     extensionEnabled = extensionToggle.checked;
     await browser.storage.sync.set({ extensionEnabled });
@@ -57,7 +64,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (typeof delayTime === "number" && delayTime > 0) {
     delayInput.value = delayTime;
   }
-
   delayInput.addEventListener("change", async () => {
     const val = parseInt(delayInput.value, 10);
     if (val > 0) {
@@ -66,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // 6) Show all blocked domains in the list
+  // 6) Build the Delayed Websites list
   function refreshDomainList() {
     domainListEl.innerHTML = "";
     blockedDomains.forEach(domain => {
@@ -82,6 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         blockedDomains = blockedDomains.filter(d => d !== domain);
         await browser.storage.sync.set({ blockedDomains });
         refreshDomainList();
+
         // Also uncheck the current domain box if removed
         if (domain === currentDomain) {
           currentDomainCheckbox.checked = false;
@@ -93,7 +100,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       domainListEl.appendChild(row);
     });
   }
-
-  // Initial populate
+  // Populate on load
   refreshDomainList();
+
+  // 7) Show/Hide Screens
+  manageWebsitesBtn.addEventListener("click", () => {
+    // Hide main screen, show websites screen
+    mainScreen.style.display = "none";
+    websitesScreen.style.display = "block";
+  });
+
+  backBtn.addEventListener("click", () => {
+    // Show main screen, hide websites screen
+    websitesScreen.style.display = "none";
+    mainScreen.style.display = "block";
+  });
 });

@@ -72,3 +72,22 @@ body {
 .domain-row button:hover {
   color: #b30000;
 }
+
+
+/* Existing styling from your original popup.css ... */
+
+/* Example button styling */
+.manage-websites-btn, .back-btn {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #800000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+.manage-websites-btn:hover,
+.back-btn:hover {
+  background: #b30000;
+}
