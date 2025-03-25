@@ -17,33 +17,48 @@
    // Default delay time if not set or invalid
    const delaySec = (typeof delayTime === "number" && delayTime > 0) ? delayTime : 30;
 
-   // 3) Create a full-page overlay
-   const overlay = document.createElement("div");
-   overlay.style.position = "fixed";
-   overlay.style.top = "0";
-   overlay.style.left = "0";
-   overlay.style.width = "100%";
-   overlay.style.height = "100%";
-   overlay.style.backgroundColor = "#222";
-   overlay.style.color = "#fff";
-   overlay.style.zIndex = "999999";
-   overlay.style.display = "flex";
-   overlay.style.flexDirection = "column";
-   overlay.style.alignItems = "center";
-   overlay.style.justifyContent = "flex-start";
-   overlay.style.textAlign = "center";
-   overlay.style.padding = "40px 20px";
-   overlay.style.fontFamily = "'Inter', sans-serif";
-   overlay.style.fontSize = "1.2rem";
-   overlay.style.lineHeight = "1.6";
-   document.documentElement.appendChild(overlay);
+   // -- SHADOW DOM SETUP --
+   const container = document.createElement("div");
+   const shadowRoot = container.attachShadow({ mode: "open" });
+   document.documentElement.appendChild(container);
 
-   // Heading
+   // 3) Create a full-page overlay in the shadow root
+   const overlay = document.createElement("div");
+   Object.assign(overlay.style, {
+     position: "fixed",
+     top: "0",
+     left: "0",
+     width: "100%",
+     height: "100%",
+     backgroundColor: "#222",
+     color: "#fff",
+     zIndex: "999999",
+     display: "flex",
+     flexDirection: "column",
+     alignItems: "center",
+     justifyContent: "flex-start",
+     textAlign: "center",
+     padding: "40px 20px",
+     fontFamily: "'Inter', sans-serif",
+     fontSize: "1.2rem",
+     lineHeight: "1.6"
+   });
+   shadowRoot.appendChild(overlay);
+
+   // Motivational heading
    const heading = document.createElement("h2");
-   heading.textContent = "Take a mindful moment...";
+   heading.textContent = "Pause. Breathe. Recenter.";
    heading.style.fontSize = "2rem";
    heading.style.marginBottom = "1rem";
    overlay.appendChild(heading);
+
+   // Supportive message
+   const subHeading = document.createElement("p");
+   subHeading.textContent = "We know the urge is strong. Let's take a mindful moment before diving into social media.";
+   subHeading.style.fontSize = "1.1rem";
+   subHeading.style.marginBottom = "2rem";
+   subHeading.style.maxWidth = "700px";
+   overlay.appendChild(subHeading);
 
    // Loading text
    const loadingText = document.createElement("p");
@@ -53,24 +68,24 @@
    loadingText.style.marginBottom = "2rem";
    overlay.appendChild(loadingText);
 
-   // 4) Fetch a random xkcd comic via background script
+   // 4) Request the random xkcd from background.js
+   let xkcdImg;
    try {
      const response = await browser.runtime.sendMessage({ action: "fetchXkcd" });
-
      if (response.success) {
-       // Replace "Loading xkcd..." text
        loadingText.textContent = "Here’s a quick mental break from xkcd:";
 
-       const comic = response.comic;
+       const { comic } = response;
+       // comic.base64img is the data URI
 
-       // Display the comic
-       const img = document.createElement("img");
-       img.src = comic.img;
-       img.style.maxWidth = "90%";
-       img.style.maxHeight = "500px";     // NEW
-       img.style.objectFit = "contain";   // NEW
-       img.style.margin = "1rem 0";
-       overlay.appendChild(img);
+       // Display the comic as a base64 data URI
+       xkcdImg = document.createElement("img");
+       xkcdImg.src = comic.base64img;
+       xkcdImg.style.maxWidth = "90%";
+       xkcdImg.style.maxHeight = "500px";
+       xkcdImg.style.objectFit = "contain";
+       xkcdImg.style.margin = "1rem 0";
+       overlay.appendChild(xkcdImg);
 
        // Alt text container
        const altText = document.createElement("p");
@@ -79,23 +94,25 @@
        altText.style.margin = "1rem auto";
        altText.style.fontSize = "1.3rem";
        altText.style.lineHeight = "1.4";
-       altText.style.textAlign = "center"; // NEW
+       altText.style.textAlign = "center";
        overlay.appendChild(altText);
 
      } else {
        console.error("Failed to fetch xkcd:", response.error);
+       loadingText.textContent = "Failed to fetch xkcd comic.";
      }
 
    } catch (err) {
      console.error("Failed to sendMessage to background:", err);
+     loadingText.textContent = "Failed to load comic.";
    }
 
-   // 5) Create a container for the flip clock
+   // 5) Container for the flip clock
    const clockContainer = document.createElement("div");
    clockContainer.style.marginTop = "2rem";
    overlay.appendChild(clockContainer);
 
-   // A) Define the "CountdownTracker" for each tile (Minutes/Seconds)
+   // A) "CountdownTracker" for each tile (Minutes/Seconds)
    function CountdownTracker(label, initialValue) {
      const el = document.createElement("span");
      el.className = "flip-clock__piece";
@@ -143,18 +160,18 @@
      this.update(initialValue);
    }
 
-   // B) Define the main flip clock function
+   // B) Flip clock function
    function FlipClock(totalSeconds, onComplete) {
      onComplete = onComplete || function(){};
 
-     // Outer container
      const clockEl = document.createElement("div");
      clockEl.className = "flip-clock";
-     clockEl.style.display = "inline-block";
-     clockEl.style.textAlign = "center";
-     clockEl.style.perspective = "600px"; // for deeper 3D effect
+     Object.assign(clockEl.style, {
+       display: "inline-block",
+       textAlign: "center",
+       perspective: "600px"
+     });
 
-     // Create two trackers: Minutes & Seconds
      const minutesTracker = new CountdownTracker("Minutes", 0);
      const secondsTracker = new CountdownTracker("Seconds", 0);
 
@@ -172,7 +189,6 @@
 
      updateTiles();
 
-     // Start countdown
      const interval = setInterval(() => {
        remaining--;
        if (remaining < 0) {
@@ -186,14 +202,99 @@
      return clockEl;
    }
 
-   // C) Insert the flip clock for 'delaySec'
+   // Insert the flip clock
    const flipClockEl = new FlipClock(delaySec, () => {
-     // Once time is up, remove overlay
-     overlay.remove();
+     container.remove();
    });
    clockContainer.appendChild(flipClockEl);
 
-   // D) Insert the flip clock CSS (inline for convenience)
+   // "Proceed" button to bypass the timer
+   const proceedBtn = document.createElement("button");
+   proceedBtn.textContent = "Proceed";
+   Object.assign(proceedBtn.style, {
+     marginTop: "20px",
+     padding: "10px 20px",
+     fontSize: "1rem",
+     cursor: "pointer"
+   });
+   proceedBtn.addEventListener("click", () => {
+     container.remove();
+   });
+   overlay.appendChild(proceedBtn);
+
+   // E) Magnifier with zoom = 2
+   function magnify(img, zoom) {
+     if (!img) return;
+
+     if (!img.complete) {
+       img.addEventListener("load", () => magnify(img, zoom), { once: true });
+       return;
+     }
+
+     const glass = document.createElement("div");
+     glass.setAttribute("class", "img-magnifier-glass");
+     overlay.appendChild(glass);
+
+     glass.style.backgroundImage = `url('${img.src}')`;
+     glass.style.backgroundRepeat = "no-repeat";
+
+     const fullWidth = img.naturalWidth;
+     const fullHeight = img.naturalHeight;
+     glass.style.backgroundSize = (fullWidth * zoom) + "px " + (fullHeight * zoom) + "px";
+
+     let bw = 3;
+     let w = 0, h = 0;
+
+     requestAnimationFrame(() => {
+       w = glass.offsetWidth / 2;
+       h = glass.offsetHeight / 2;
+     });
+
+     glass.addEventListener("mousemove", moveMagnifier);
+     img.addEventListener("mousemove", moveMagnifier);
+     glass.addEventListener("touchmove", moveMagnifier);
+     img.addEventListener("touchmove", moveMagnifier);
+
+     function moveMagnifier(e) {
+       e.preventDefault();
+       const pos = getCursorPos(e);
+       let x = pos.x;
+       let y = pos.y;
+
+       const fw = fullWidth / (img.width || 1);
+       const fh = fullHeight / (img.height || 1);
+
+       if (x > img.width - (w / zoom)) { x = img.width - (w / zoom); }
+       if (x < w / zoom) { x = w / zoom; }
+       if (y > img.height - (h / zoom)) { y = img.height - (h / zoom); }
+       if (y < h / zoom) { y = h / zoom; }
+
+       const rect = img.getBoundingClientRect();
+       const offsetLeft = rect.left + window.scrollX;
+       const offsetTop = rect.top + window.scrollY;
+
+       glass.style.position = "absolute";
+       glass.style.left = (offsetLeft + x - w) + "px";
+       glass.style.top = (offsetTop + y - h) + "px";
+
+       const bgX = (x * fw * zoom) - w + bw;
+       const bgY = (y * fh * zoom) - h + bw;
+       glass.style.backgroundPosition = `-${bgX}px -${bgY}px`;
+     }
+
+     function getCursorPos(e) {
+       e = e || window.event;
+       const rect = img.getBoundingClientRect();
+       let x = e.pageX - rect.left - window.scrollX;
+       let y = e.pageY - rect.top - window.scrollY;
+       return { x, y };
+     }
+   }
+
+   // Magnify with factor = 2
+   magnify(xkcdImg, 2);
+
+   // F) Shadow root CSS
    const styleEl = document.createElement("style");
    styleEl.textContent = `
      .flip-clock {
@@ -216,7 +317,7 @@
      }
      .card {
        position: relative;
-       font-size: 3rem; /* Adjust tile size here */
+       font-size: 3rem;
        line-height: 1;
        color: #fff;
      }
@@ -278,6 +379,18 @@
        0% { transform: rotateX(90deg); }
        100% { transform: rotateX(0deg); }
      }
+
+     /* Magnifier glass styling */
+     .img-magnifier-glass {
+       border: 3px solid #000;
+       border-radius: 50%;
+       cursor: none;
+       width: 200px;
+       height: 200px;
+       pointer-events: none;
+       z-index: 10000;
+       background-repeat: no-repeat;
+     }
    `;
-   document.head.appendChild(styleEl);
+   shadowRoot.appendChild(styleEl);
  })();
