@@ -21,7 +21,6 @@ Here’s how the popup looks:
 
 When you visit a delayed website, you’ll see:
 
-![Overlay with xkcd comic and flip clock countdown.](content.png)
 
 1. **Mindful moment heading**: Encourages you to pause.  
 2. **Random xkcd comic**: A quick mental break.  
